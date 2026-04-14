@@ -2,7 +2,8 @@ import OpenAI from "openai";
 
 export const analyzeScam = async (text) => {
   const client = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: process.env.GROQ_API_KEY,
+    baseURL: "https://api.groq.com/openai/v1",
   });
 
   const prompt = `
@@ -18,7 +19,7 @@ Return JSON:
 `;
 
   const response = await client.chat.completions.create({
-    model: "gpt-5.4",
+    model: "openai/gpt-oss-20b",
     messages: [
       {
         role: "system",
