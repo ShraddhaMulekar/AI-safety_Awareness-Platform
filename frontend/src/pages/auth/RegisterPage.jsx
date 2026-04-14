@@ -1,6 +1,6 @@
 import {Link, useNavigate } from "react-router-dom";
 import useForm from "../../hooks/useForm";
-import { RegisterLogic } from "./RegisterLogic";
+import { RegisterLogicComponent } from "../../components/auth/RegisterLogicComponent";
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
@@ -11,12 +11,12 @@ export const RegisterPage = () => {
     password: "",
   });
 
-  const { registerUser } = RegisterLogic();
+  const { registerUser } = RegisterLogicComponent();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     registerUser(values);
-    navigate(to = "/login");
+    navigate("/login");
   };
 
   return (

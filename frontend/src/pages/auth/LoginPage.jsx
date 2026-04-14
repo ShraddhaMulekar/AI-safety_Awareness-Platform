@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import useForm from "../../hooks/useForm";
-import { loginLogic } from "./loginLogic";
+import { loginLogic } from "../../components/auth/LoginLogicComponent";
 
 export const LoginPage = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { values, handleChange } = useForm({
     email: "",
     password: "",
@@ -14,7 +14,7 @@ export const LoginPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     loginUser(values);
-    navigate(to="/"); 
+    // navigate(to="/"); 
   };
 
   return (

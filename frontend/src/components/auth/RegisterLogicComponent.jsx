@@ -1,18 +1,20 @@
 import { useNavigate } from "react-router-dom";
 import { useFetch } from "../../hooks/UseFetch";
 
-export const RegisterLogic = () => {
+export const RegisterLogicComponent = () => {
   const { request } = useFetch();
-  const navigate = useNavigate()
 
   const registerUser = async (values) => {
     try {
-      const data = await request("/auth/register", "POST", values);
-      console.log(data);
+      const data = await request({
+        url: "/auth/register",
+        method: "POST",
+        body: values,
+      });
+      // console.log(data);
 
-      if (data?.ok) {
+      if (data?.success) {
         alert("Registration Successful!");
-        navigate("/login");
       } else {
         alert(data?.message || "Registration Failed!");
       }

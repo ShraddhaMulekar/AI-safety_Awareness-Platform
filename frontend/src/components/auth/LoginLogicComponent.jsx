@@ -8,7 +8,11 @@ export const loginLogic = () => {
 
   const loginUser = async (values) => {
     try {
-      const data = await request("/auth/login", "POST", values);
+      const data = await request({
+        url: "/auth/login",
+        method: "POST",
+        body: values
+      });
     //   console.log(data);
 
       if (data?.token) {

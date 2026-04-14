@@ -4,8 +4,9 @@
 // import './App.css'
 
 import { BrowserRouter, Route, Routes } from "react-router-dom"
-import { LoginPage } from "./components/login/LoginPage"
-import { RegisterPage } from "./components/register/RegisterPage"
+import ScamAnalyzerPage from "./pages/scam/ScamAnalyzerPage"
+import { LoginPage } from "./pages/auth/LoginPage"
+import { RegisterPage } from "./pages/auth/RegisterPage"
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" element={<h1>Home</h1>} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/scam" element={<ScamAnalyzerPage />} />
       </Routes>
     </BrowserRouter>
   )
