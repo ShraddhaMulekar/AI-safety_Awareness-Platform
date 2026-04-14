@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useForm from "../../hooks/useForm";
 import { loginLogic } from "./loginLogic";
 
@@ -14,7 +14,7 @@ export const LoginPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     loginUser(values);
-    navigate((to = "/"));
+    navigate(to="/"); 
   };
 
   return (
@@ -37,6 +37,10 @@ export const LoginPage = () => {
         />
         <button>Login</button>
       </form>
+
+      <p>
+        Don't have an account? <Link to="/register">Register</Link>
+      </p>
     </div>
   );
 };
