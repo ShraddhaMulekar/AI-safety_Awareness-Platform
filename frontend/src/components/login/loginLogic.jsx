@@ -9,7 +9,7 @@ export const loginLogic = () => {
   const loginUser = async (values) => {
     try {
       const data = await request("/auth/login", "POST", values);
-      console.log(data);
+    //   console.log(data);
 
       if (data?.token) {
         localStorage.setItem("token", data.token);
