@@ -7,14 +7,32 @@ export const analyzeScam = async (text) => {
   });
 
   const prompt = `
-Analyze the following message and detect if it is a scam.
+You are an AI system trained to detect scams in messages.
 
-Message: "${text}"
+Analyze the message below and determine if it is a scam or not.
 
-Return JSON:
+Message:
+"${text}"
+
+Instructions:
+- Carefully check for scam patterns such as:
+  • Requests for money or personal information
+  • Urgency or pressure (e.g., "act now", "limited time")
+  • Too-good-to-be-true offers (lottery, prizes, free money)
+  • Suspicious links or unknown sources
+  • Impersonation (bank, government, company)
+
+- Based on your analysis, classify the risk level:
+  • Low → Likely safe
+  • Medium → Suspicious
+  • High → Very likely a scam
+
+- Respond ONLY in valid JSON format (no extra text).
+
+Output format:
 {
   "risk": "Low | Medium | High",
-  "reason": "short explanation"
+  "reason": "Clear and short explanation in 1 sentence"
 }
 `;
 
@@ -31,5 +49,9 @@ Return JSON:
       },
     ],
   });
-  return response.choices[0].message.content;
+  const cleanResponse = response.choices[0].message.content
+    .replace(/```json|```/g, "")
+    .trim();
+  const parsed = JSON.parse(cleanResponse);
+  return parsed;
 };
