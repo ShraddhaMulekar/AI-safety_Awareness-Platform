@@ -7,6 +7,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom"
 import ScamAnalyzerPage from "./pages/scam/ScamAnalyzerPage"
 import { LoginPage } from "./pages/auth/LoginPage"
 import { RegisterPage } from "./pages/auth/RegisterPage"
+import BillAnalyzerPage from "./pages/bill/BillPage"
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/scam" element={<ScamAnalyzerPage />} />
+        <Route path="/bill" element={<BillAnalyzerPage />} />
       </Routes>
     </BrowserRouter>
   )

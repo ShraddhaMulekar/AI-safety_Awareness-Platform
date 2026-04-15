@@ -9,22 +9,35 @@ export const useFetch = () => {
     url,
     method = "GET",
     body = null,
+    data = null,
     headers = {},
   }) => {
     setLoading(true);
     setError(null);
 
     try {
-      const data = await fetchAPI(url, {
+      const payload = data ?? body;
+      const isFormData = payload instanceof FormData;
+      const hasContentType = Object.keys(headers).some(
+        (key) => key.toLowerCase() === "content-type",
+      );
+
+      const requestHeaders = { ...headers };
+      if (!isFormData && payload && !hasContentType) {
+        requestHeaders["Content-Type"] = "application/json";
+      }
+
+      const responseData = await fetchAPI(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-          ...headers,
-        },
-        body: body ? JSON.stringify(body) : null,
+        headers: requestHeaders,
+        body: isFormData
+          ? payload
+          : payload
+            ? JSON.stringify(payload)
+            : null,
       });
 
-      return data;
+      return responseData;
     } catch (error) {
       setError(error.message || "Something went wrong!");
       throw error;

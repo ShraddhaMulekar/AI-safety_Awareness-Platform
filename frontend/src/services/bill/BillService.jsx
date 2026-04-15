@@ -7,8 +7,7 @@ const BillService = async(request, file) => {
     return await request({
         url: "/bill/test-upload",
         method: "POST",
-        data: formData,
-        headers: {}
+        body: formData,
     })
 }
 

@@ -29,12 +29,61 @@ Return STRICT JSON only:
 {
   "total": "",
   "items": [],
-  "summary": ""
+  "summary": "",
+  "bullets": []
 }
 
 OCR TEXT:
 ${text}
 `;
+
+const cleanLine = (value = "") => value.replace(/\s+/g, " ").trim();
+
+const pickFirst = (text, regex) => {
+  const match = text.match(regex);
+  return match?.[1] ? cleanLine(match[1]) : "";
+};
+
+const buildEasyBullets = (text, total = "") => {
+  const billNumber = pickFirst(text, /BILL\s*NO\.?\s*\(?[A-Z]*\)?\s*[:\-]?\s*([A-Z0-9\-\/]+)/i);
+  const consumerNumber = pickFirst(text, /(?:CONSUMER|CUSTOMER|ACCOUNT|TED)\s*(?:NO|NUMBER)?\s*[:\-]?\s*([A-Z0-9\-]{6,})/i);
+  const dueDate = pickFirst(text, /(?:DUE\s*DATE|PAY\s*BY)\s*[:\-]?\s*(\d{2}[\/\-]\d{2}[\/\-]\d{2,4})/i);
+  const totalNumber = Number.parseFloat(String(total).replace(/[^\d.]/g, ""));
+  const payableFromText = pickFirst(text, /(?:PAYABLE|TOTAL|BILL\s*AMOUNT|Rs\.?)\s*[:\-]?\s*(\d+(?:\.\d{1,2})?)/i);
+  const payable = Number.isFinite(totalNumber) && totalNumber >= 10 ? total : payableFromText;
+
+  const bullets = [];
+  if (payable) bullets.push(`Amount to pay: Rs ${payable}`);
+  if (dueDate) bullets.push(`Due date: ${dueDate}`);
+  if (billNumber) bullets.push(`Bill number: ${billNumber}`);
+  if (consumerNumber) bullets.push(`Consumer/account number: ${consumerNumber}`);
+  bullets.push("Pay before due date to avoid late charges.");
+  bullets.push("Keep this bill number for support or payment queries.");
+  return bullets.slice(0, 6);
+};
+
+const normalizeBillData = (raw, text) => {
+  const total = cleanLine(raw?.total || "");
+  const summary = cleanLine(raw?.summary || "");
+  const parsedBullets = Array.isArray(raw?.bullets)
+    ? raw.bullets.map((b) => cleanLine(String(b))).filter(Boolean)
+    : [];
+
+  const bullets = parsedBullets.length
+    ? parsedBullets.slice(0, 6)
+    : buildEasyBullets(text, total);
+
+  const shortSummary = summary
+    ? summary.slice(0, 220)
+    : "This is your electricity bill summary in simple points.";
+
+  return {
+    total,
+    items: Array.isArray(raw?.items) ? raw.items : [],
+    summary: shortSummary,
+    bullets,
+  };
+};
 
 const fallbackBillParser = (text) => {
   const amountMatches = [...text.matchAll(/(?:Rs\.?|INR|TOTAL|Total)?\s*[:=]?\s*(\d{2,6}(?:\.\d{1,2})?)/gi)]
@@ -44,12 +93,11 @@ const fallbackBillParser = (text) => {
   const bestTotal = amountMatches.length ? Math.max(...amountMatches) : null;
   const compactSummary = text.replace(/\s+/g, " ").slice(0, 220);
 
-  return {
+  return normalizeBillData({
     total: bestTotal ? String(bestTotal) : "",
     items: [],
     summary: compactSummary || "Bill text extracted successfully.",
-    parser: "fallback",
-  };
+  }, text);
 };
 
 export const analyzeBill = async (text) => {
@@ -88,7 +136,7 @@ export const analyzeBill = async (text) => {
 
         if (parsed) {
           return {
-            ...parsed,
+            ...normalizeBillData(parsed, text),
             parser: "hf-chat",
             modelUsed: model,
           };
@@ -96,9 +144,7 @@ export const analyzeBill = async (text) => {
 
         if (generatedText) {
           return {
-            total: "",
-            items: [],
-            summary: generatedText.slice(0, 500),
+            ...normalizeBillData({ summary: generatedText }, text),
             parser: "hf-chat-raw-text",
             modelUsed: model,
           };

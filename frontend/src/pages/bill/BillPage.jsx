@@ -11,6 +11,7 @@ const BillAnalyzerPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setResult(null);
 
     if (!file) {
       alert("Please select an image");
@@ -20,12 +21,8 @@ const BillAnalyzerPage = () => {
     try {
       const res = await BillService(request, file);
       console.log("API RESPONSE:", res);
-
-      if (res?.ok) {
-        setResult(res);
-      } else {
-        alert(res?.error || "Analysis failed");
-      }
+      setResult(res);
+      if (!res?.ok) alert(res?.error || "Analysis failed");
     } catch (err) {
       console.error(err);
       alert("Error analyzing bill");
