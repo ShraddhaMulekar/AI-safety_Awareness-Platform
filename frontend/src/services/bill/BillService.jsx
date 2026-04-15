@@ -1,0 +1,15 @@
+import React from 'react'
+
+const BillService = async(request, file) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    return await request({
+        url: "/bill/test-upload",
+        method: "POST",
+        data: formData,
+        headers: {}
+    })
+}
+
+export default BillService
