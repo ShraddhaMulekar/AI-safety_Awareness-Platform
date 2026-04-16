@@ -23,8 +23,7 @@ export const LoginPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     loginUser(values);
-    // navigate(to="/"); 
-  };
+    };
 
   return (
     <Stack align="center" justify="center" minH="70vh" px={4}>
@@ -69,7 +68,7 @@ export const LoginPage = () => {
               borderColor="whiteAlpha.300"
             />
           </FormControl>
-          <Button type="submit" colorScheme="cyan" size="lg" borderRadius="full">
+          <Button type="submit" colorScheme="cyan" size="lg" borderRadius="base" _hover={{borderRadius:"full"}}>
             Login
           </Button>
           <Text textAlign="center" color="whiteAlpha.800">
