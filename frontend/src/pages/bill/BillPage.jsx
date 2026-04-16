@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Box, Button, Heading, Input, Stack, Text } from "@chakra-ui/react";
 import { useFetch } from "../../hooks/UseFetch";
 import BillResult from "../../components/bill/BillComponent";
 import BillService from "../../services/bill/BillService";
@@ -30,27 +31,47 @@ const BillAnalyzerPage = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>🧾 Bill Analyzer</h1>
+    <Stack spacing={6}>
+      <Box
+        bg="whiteAlpha.120"
+        border="1px solid"
+        borderColor="whiteAlpha.300"
+        borderRadius="3xl"
+        p={{ base: 5, md: 8 }}
+      >
+        <Heading size="lg" mb={2}>
+          Bill Analyzer
+        </Heading>
+        <Text color="whiteAlpha.800" mb={6}>
+          Upload a bill image and receive a short, easy-to-understand explanation.
+        </Text>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setFile(e.target.files[0])}
-        />
+        <Box as="form" onSubmit={handleSubmit}>
+          <Stack direction={{ base: "column", md: "row" }} spacing={4} align={{ base: "stretch", md: "center" }}>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFile(e.target.files[0])}
+              p={1}
+              bg="whiteAlpha.100"
+              borderColor="whiteAlpha.300"
+            />
 
-        <br /><br />
+            <Button colorScheme="purple" type="submit" isLoading={loading} loadingText="Analyzing...">
+              Upload and Analyze
+            </Button>
+          </Stack>
+        </Box>
+      </Box>
 
-        <button disabled={loading}>
-          {loading ? "Analyzing..." : "Upload & Analyze"}
-        </button>
-      </form>
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && (
+        <Box bg="red.500" color="white" p={3} borderRadius="xl">
+          {error}
+        </Box>
+      )}
 
       <BillResult data={result} />
-    </div>
+    </Stack>
   );
 };
 
