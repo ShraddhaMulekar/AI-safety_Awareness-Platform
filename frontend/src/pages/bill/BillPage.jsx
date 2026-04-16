@@ -21,7 +21,7 @@ const BillAnalyzerPage = () => {
 
     try {
       const res = await BillService(request, file);
-      console.log("API RESPONSE:", res);
+      // console.log("API RESPONSE:", res);
       setResult(res);
       if (!res?.ok) alert(res?.error || "Analysis failed");
     } catch (err) {
