@@ -1,4 +1,5 @@
 import React from "react";
+import { Text } from "@chakra-ui/react";
 
 const BillComponent = ({ data }) => {
   if (!data) {
@@ -17,10 +18,15 @@ const BillComponent = ({ data }) => {
         <strong>Summary:</strong> {data.billData?.summary || "No short summary available."}
       </p>
 
-      <h3>Easy To Understand</h3>
-      <ul>
+      <br />
+      <Text textStyle="lg" fontWeight="bold">
+        Easy To Understand
+      </Text>
+      <ul style={{ paddingLeft: "60px" }}>
         {(data.billData?.bullets || []).map((point, index) => (
-          <li key={`${point}-${index}`}>{point}</li>
+          <li key={`${point}-${index}`} align="left">
+            {point}
+          </li>
         ))}
       </ul>
 
