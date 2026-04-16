@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { fetchAPI } from "../api/BaseUrl";
+import { fetchAPI } from "../api/baseUrl";
 
 export const useFetch = () => {
   const [loading, setLoading] = useState(false);
