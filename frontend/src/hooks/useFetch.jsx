@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { fetchAPI } from "../api/baseUrl";
 
 export const useFetch = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const request = async ({
+  const request = useCallback(async ({
     url,
     method = "GET",
     body = null,
@@ -44,7 +44,7 @@ export const useFetch = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   return { loading, error, request };
 };

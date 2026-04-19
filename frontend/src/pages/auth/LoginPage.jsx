@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -10,20 +11,26 @@ import {
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import useForm from "../../hooks/useForm";
-import { loginLogic } from "../../components/auth/LoginLogicComponent";
+import { useLoginLogic } from "../../components/auth/LoginLogicComponent";
 
 export const LoginPage = () => {
+  const [loading, setLoading] = useState(false);
   const { values, handleChange } = useForm({
     email: "",
     password: "",
   });
 
-  const { loginUser } = loginLogic();
+  const { loginUser } = useLoginLogic();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    loginUser(values);
-    };
+    setLoading(true);
+    try {
+      await loginUser(values);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Stack align="center" justify="center" minH="70vh" px={4}>
@@ -68,7 +75,7 @@ export const LoginPage = () => {
               borderColor="whiteAlpha.300"
             />
           </FormControl>
-          <Button type="submit" colorScheme="cyan" size="lg" borderRadius="base" _hover={{borderRadius:"full"}}>
+          <Button type="submit" colorScheme="cyan" size="lg" borderRadius="base" _hover={{borderRadius:"full"}} isLoading={loading} loadingText="Signing in...">
             Login
           </Button>
           <Text textAlign="center" color="whiteAlpha.800">

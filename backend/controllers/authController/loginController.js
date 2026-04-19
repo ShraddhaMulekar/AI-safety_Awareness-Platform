@@ -28,7 +28,11 @@ export const loginController = async (req, res) => {
         });
       }
       if (result) {
-        const payload = { name: userMatch.name, email: userMatch.email };
+        const payload = {
+          id: userMatch._id,
+          name: userMatch.name,
+          email: userMatch.email,
+        };
         const token = jwt.sign(payload, process.env.JWT_SECRET, {
           expiresIn: "1h",
         });

@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useFetch } from "../../hooks/UseFetch";
 
-export const loginLogic = () => {
+export const useLoginLogic = () => {
   const { request } = useFetch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -11,9 +11,8 @@ export const loginLogic = () => {
       const data = await request({
         url: "/auth/login",
         method: "POST",
-        body: values
+        body: values,
       });
-    //   console.log(data);
 
       if (data?.token) {
         localStorage.setItem("token", data.token);
@@ -25,11 +24,12 @@ export const loginLogic = () => {
         } else {
           navigate("/", { replace: true });
         }
-      } else {
-        alert(data?.message || "Login failed!");
+        return;
       }
+
+      alert(data?.message || "Login failed!");
     } catch (error) {
-      throw error;
+      alert(error?.message || "Login failed due to network error.");
     }
   };
   return { loginUser };

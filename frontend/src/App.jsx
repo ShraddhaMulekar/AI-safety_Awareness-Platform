@@ -3,6 +3,7 @@ import ScamAnalyzerPage from "./pages/scam/ScamAnalyzerPage"
 import { LoginPage } from "./pages/auth/LoginPage"
 import { RegisterPage } from "./pages/auth/RegisterPage"
 import BillAnalyzerPage from "./pages/bill/BillPage"
+import HistoryPage from "./pages/bill/HistoryPage"
 import HomePage from "./pages/HomePage"
 import AppShell from "./components/layout/AppShell"
 
@@ -17,6 +18,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/scam" element={<ScamAnalyzerPage />} />
           <Route path="/bill" element={<BillAnalyzerPage />} />
+          <Route path="/history" element={<HistoryPage />} />
         </Routes>
       </AppShell>
     </BrowserRouter>

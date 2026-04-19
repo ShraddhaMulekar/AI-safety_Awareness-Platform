@@ -15,9 +15,10 @@ import { HiShieldCheck } from "react-icons/hi";
 const links = [
   { label: "Home", to: "/" },
   { label: "Login", to: "/login" },
-  { label: "Register", to: "/register" },
+  // { label: "Register", to: "/register" },
   { label: "Scam Analyzer", to: "/scam" },
   { label: "Bill Analyzer", to: "/bill" },
+  { label: "History", to: "/history" },
 ];
 
 const pulse = keyframes`
