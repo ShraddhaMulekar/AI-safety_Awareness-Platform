@@ -9,21 +9,31 @@ import {
   Alert,
   AlertIcon,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useFetch } from "../../hooks/UseFetch";
 import SavedBillService from "../../services/bill/savedBillService";
 
 const HistoryPage = () => {
+  const navigate = useNavigate();
   const [bills, setBills] = useState([]);
   const { loading, error, request } = useFetch();
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (!token) return;
+    if (!token) {
+      alert("You are not logged in. Please log in now!");
+      navigate("/login");
+      return;
+    }
 
     const fetchBills = async () => {
       try {
         const res = await SavedBillService.getSavedBills(request);
+        if (res?.status === 401) {
+          alert("You are not logged in. Please log in now!");
+          navigate("/login");
+          return;
+        }
         if (res?.ok) {
           setBills(res.bills || []);
         } else {
@@ -35,29 +45,7 @@ const HistoryPage = () => {
     };
 
     fetchBills();
-  }, [token, request]);
-
-  if (!token) {
-    return (
-      <Box
-        bg="whiteAlpha.120"
-        border="1px solid"
-        borderColor="whiteAlpha.300"
-        borderRadius="3xl"
-        p={8}
-      >
-        <Heading size="lg" mb={4}>
-          Saved History
-        </Heading>
-        <Text mb={4} color="whiteAlpha.800">
-          Please login to view your saved bill history.
-        </Text>
-        <Button as={RouterLink} to="/login" colorScheme="purple" size="lg">
-          Login to continue
-        </Button>
-      </Box>
-    );
-  }
+  }, [token, request, navigate]);
 
   return (
     <Stack spacing={6}>
@@ -130,6 +118,24 @@ const HistoryPage = () => {
                 <strong>Saved on:</strong>{" "}
                 {new Date(bill.createdAt).toLocaleString()}
               </Text>
+
+              {bill.extractedText && (
+                <Box
+                  mt={3}
+                  p={4}
+                  bg="whiteAlpha.900"
+                  borderRadius="xl"
+                  border="1px solid"
+                  borderColor="gray.200"
+                >
+                  <Text fontWeight="600" mb={2} color="gray.700">
+                    Extracted text
+                  </Text>
+                  <Text color="gray.700" fontSize="sm" whiteSpace="pre-wrap">
+                    {bill.extractedText}
+                  </Text>
+                </Box>
+              )}
             </Box>
           ))}
         </Stack>
