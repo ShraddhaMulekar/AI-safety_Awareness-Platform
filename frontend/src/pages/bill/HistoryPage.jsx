@@ -119,7 +119,7 @@ const HistoryPage = () => {
                 {new Date(bill.createdAt).toLocaleString()}
               </Text>
 
-              {bill.extractedText && (
+              {/* {bill.extractedText && (
                 <Box
                   mt={3}
                   p={4}
@@ -135,7 +135,7 @@ const HistoryPage = () => {
                     {bill.extractedText}
                   </Text>
                 </Box>
-              )}
+              )} */}
             </Box>
           ))}
         </Stack>

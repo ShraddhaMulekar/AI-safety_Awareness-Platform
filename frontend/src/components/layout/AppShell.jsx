@@ -9,12 +9,13 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { keyframes } from "@emotion/react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { HiShieldCheck } from "react-icons/hi";
+import { useState, useEffect } from "react";
 
 const links = [
   { label: "Home", to: "/" },
-  { label: "Login", to: "/login" },
+  // { label: "Login", to: "/login" },
   // { label: "Register", to: "/register" },
   { label: "Scam Analyzer", to: "/scam" },
   { label: "Bill Analyzer", to: "/bill" },
@@ -29,7 +30,20 @@ const pulse = keyframes`
 
 const AppShell = ({ children }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const compact = useBreakpointValue({ base: true, md: false });
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, [location]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    navigate("/");
+  };
 
   return (
     <Box minH="100vh" bgGradient="radial(circle at top, #1a2d65 0%, #070b1a 40%, #04070f 100%)">
@@ -97,6 +111,32 @@ const AppShell = ({ children }) => {
                   </Button>
                 );
               })}
+              {isLoggedIn ? (
+                <Button
+                  size="sm"
+                  borderRadius="full"
+                  variant="ghost"
+                  colorScheme="red"
+                  onClick={handleLogout}
+                  _hover={{ transform: "translateY(-1px)" }}
+                  transition="all 0.2s ease"
+                >
+                  Logout
+                </Button>
+              ) : (
+                <Button
+                  as={RouterLink}
+                  to="/login"
+                  size="sm"
+                  borderRadius="full"
+                  variant="ghost"
+                  colorScheme="whiteAlpha"
+                  _hover={{ transform: "translateY(-1px)" }}
+                  transition="all 0.2s ease"
+                >
+                  Login
+                </Button>
+              )}
             </HStack>
           </Flex>
         </Container>

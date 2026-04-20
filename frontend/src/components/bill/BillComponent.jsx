@@ -78,13 +78,28 @@ const BillComponent = ({ data }) => {
             <strong>Items:</strong>
           </Text>
           <ul>
-            {(bill.items || []).map((item, i) => (
-              <li key={i}>{item}</li>
-            ))}
+            {(bill.items || []).map((item, i) => {
+              const text = typeof item === "string"
+                ? item
+                : item && typeof item === "object"
+                  ? item.description || item.name || `${item.amount ?? ""}`
+                  : String(item);
+
+              const amount = item && typeof item === "object"
+                ? item.amount
+                : null;
+
+              return (
+                <li key={i}>
+                  {text}
+                  {amount != null ? ` - ₹${amount}` : null}
+                </li>
+              );
+            })}
           </ul>
 
           <Text mt={3}>
-            <strong>Summary:</strong> {bill.summary}
+            <strong>Summary:</strong> {bill.summary || "No short summary available."}
           </Text>
         </Box>
       )}
