@@ -39,6 +39,7 @@ const BillAnalyzerPage = () => {
 
   const handleSave = async () => {
     const token = localStorage.getItem("token");
+
     const hasValidToken = token && token !== "null" && token !== "undefined";
     if (!hasValidToken) {
       navigate("/login", { state: { from: "/bill" } });
@@ -59,6 +60,11 @@ const BillAnalyzerPage = () => {
 
       if (res?.status === 401 || /unauthorized/i.test(res?.message || "")) {
         navigate("/login", { state: { from: "/bill" } });
+        return;
+      }
+
+      if (res?.duplicate) {
+        alert("This bill is already saved in your history!");
         return;
       }
 

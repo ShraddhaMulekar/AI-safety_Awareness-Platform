@@ -6,12 +6,19 @@ import cloudinary from "../config/cloudinary.js";
 const storage = new CloudinaryStorage({
   cloudinary,
   params: async (req, file) => {
-    let resourceType = "auto"; // handles image + pdf
+    // let resourceType = "auto"; // handles image + pdf
+    const isPDF = file.mimetype === "application/pdf";
+
+    console.log(process.env.CLOUD_NAME);
+    console.log(process.env.CLOUD_API_KEY);
+    console.log(process.env.CLOUD_API_SECRET);
 
     return {
       folder: "bills",
-      resource_type: resourceType,
-      public_id: `${Date.now()}-${file.originalname.replace(/\s+/g, "-")}`,
+      resource_type: isPDF ? "raw" : "image", // "raw" for PDFs, "image" for others
+      type: "upload",
+      access_mode: "public",
+      public_id: `${Date.now()}-${file.originalname.replace(/\.[^/.]+$/, "")}`,
     };
   },
 });
@@ -19,8 +26,7 @@ const storage = new CloudinaryStorage({
 // ✅ File filter (same logic, simplified)
 const fileFilter = (_req, file, cb) => {
   const isValid =
-    file.mimetype.startsWith("image/") ||
-    file.mimetype === "application/pdf";
+    file.mimetype.startsWith("image/") || file.mimetype === "application/pdf";
 
   if (!isValid) {
     return cb(new Error("Only image or PDF files are allowed"));
@@ -50,9 +56,10 @@ export const uploadFile = (req, res, next) => {
       return res.status(400).json({ ok: false, error: message });
     }
 
+    console.log("err", err);
     return res.status(400).json({
       ok: false,
-      error: err.message || "Upload failed",
+      error: err.message || "File upload failed",
     });
   });
 };

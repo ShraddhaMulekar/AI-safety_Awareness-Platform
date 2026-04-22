@@ -1,4 +1,6 @@
 import axios from "axios";
+import dotenv from "dotenv";
+dotenv.config();
 
 const HF_URL = "https://router.huggingface.co/v1/chat/completions";
 const cleanText = (text = "") =>
@@ -99,8 +101,28 @@ const findBestAmountFallback = (text) => {
 
 const extractUtilityUnit = (text, type) => {
   if (type === "electricity") {
-    const match = text.match(/(युनिट|unit)[^\d]*([0-9]{1,4})/i);
-    if (match) return match[2];
+    
+    // ✅ Pattern 1: Mahadiscom table — currentReading prevReading multiplier UNITS samaUnit ekunVapar
+    // e.g: "23663 23479 1.00 184 0 184"
+    const tablePattern = text.match(
+      /\b\d{4,6}\s+\d{4,6}\s+[\d.]+\s+(\d{1,4})\s+\d{1,4}\s+\d{1,4}\b/
+    );
+    if (tablePattern?.[1]) return tablePattern[1];
+
+    // ✅ Pattern 2: number after multiplier "1.00"
+    // e.g: "1.00  184"
+    const multiplierPattern = text.match(/\b1\.00\s+(\d{1,4})\b/);
+    if (multiplierPattern?.[1]) return multiplierPattern[1];
+
+    // ✅ Pattern 3: Marathi label युनिट
+    const marathiPattern = text.match(/युनिट\s*[:\-]?\s*(\d{1,4})/i);
+    if (marathiPattern?.[1]) return marathiPattern[1];
+
+    // ✅ Pattern 4: English label
+    const englishPattern = text.match(
+      /(?:units?\s*consumed|billing\s*units?|total\s*units?)\s*[:\-]?\s*(\d{1,4})/i
+    );
+    if (englishPattern?.[1]) return englishPattern[1];
   }
 
   if (type === "water") {

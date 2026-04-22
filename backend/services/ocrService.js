@@ -1,40 +1,44 @@
 import Tesseract from "tesseract.js";
-import { fromPath } from "pdf2pic";
+import axios from "axios";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 
-export const extractTextFromImage = async (filePath, mimetype) => {
+export const extractTextFromImage = async (fileUrl, mimetype) => {
   try {
-    // ✅ If PDF → convert first page to image
     if (mimetype === "application/pdf") {
-      const convert = fromPath(filePath, {
-        density: 200,
-        saveFilename: "temp",
-        savePath: "./uploads",
-        format: "png",
-        width: 1024,
-        height: 1024,
+      const response = await axios.get(fileUrl, {
+        responseType: "arraybuffer",
+        maxRedirects: 5,
       });
 
-      const page = await convert(1); // first page only
-      const imagePath = page.path;
+      const buffer = new Uint8Array(response.data);
 
-      // OCR on converted image
-      const result = await Tesseract.recognize(imagePath, "eng+mar", {
-        tessedit_char_whitelist:
-          "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:/-.₹Rs ",
-      });
+      // Load PDF
+      const loadingTask = pdfjsLib.getDocument({ data: buffer });
+      const pdfDoc = await loadingTask.promise;
 
-      return result.data.text;
+      let fullText = "";
+
+      // Extract text from every page
+      for (let i = 1; i <= pdfDoc.numPages; i++) {
+        const page = await pdfDoc.getPage(i);
+        const content = await page.getTextContent();
+        const pageText = content.items.map((item) => item.str).join(" ");
+        fullText += pageText + "\n";
+      }
+
+      if (!fullText.trim() || fullText.trim().length < 10) {
+        throw new Error("PDF parsed but no text found — may be a scanned/image PDF");
+      }
+
+      return fullText;
     }
 
-    // ✅ Normal image
-    const result = await Tesseract.recognize(filePath, "eng+mar", {
-      tessedit_char_whitelist:
-        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz:/-.₹Rs ",
-    });
-
+    // For images
+    const result = await Tesseract.recognize(fileUrl, "eng+mar");
     return result.data.text;
+
   } catch (error) {
-    console.error("OCR Error:", error);
+    console.error("OCR Error:", error.message);
     throw error;
   }
 };
