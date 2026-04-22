@@ -1,7 +1,7 @@
 import express from "express";
-import { uploadImage } from "../middleware/uploadMiddleware.js";
 import { billController } from "../controllers/billController.js";
+import { uploadFile } from "../middleware/uploadMiddleware.js";
 
 export const billRouter = express.Router()
 
-billRouter.post("/test-upload", uploadImage, billController);
+billRouter.post("/upload", uploadFile, billController);

@@ -1,26 +1,26 @@
-import fs from "fs";
-import path from "path";
 import multer from "multer";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import cloudinary from "../config/cloudinary.js";
 
-const uploadPath = path.resolve("uploads");
-if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath, { recursive: true });
-}
+// ✅ Cloudinary storage
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
+    let resourceType = "auto"; // handles image + pdf
 
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
-    cb(null, uploadPath);
-  },
-  filename: (_req, file, cb) => {
-    const safeName = file.originalname.replace(/\s+/g, "-");
-    cb(null, `${Date.now()}-${safeName}`);
+    return {
+      folder: "bills",
+      resource_type: resourceType,
+      public_id: `${Date.now()}-${file.originalname.replace(/\s+/g, "-")}`,
+    };
   },
 });
 
+// ✅ File filter (same logic, simplified)
 const fileFilter = (_req, file, cb) => {
-  const allowedTypes = ["image/", "application/pdf"];
-
-  const isValid = allowedTypes.some((type) => file.mimetype.startsWith(type));
+  const isValid =
+    file.mimetype.startsWith("image/") ||
+    file.mimetype === "application/pdf";
 
   if (!isValid) {
     return cb(new Error("Only image or PDF files are allowed"));
@@ -29,34 +29,30 @@ const fileFilter = (_req, file, cb) => {
   cb(null, true);
 };
 
+// ✅ Multer config
 export const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 15 * 1024 * 1024 },
 });
 
-export const uploadImage = (req, res, next) => {
-  upload.single("image")(req, res, (err) => {
-    if (!err) {
-      return next();
-    }
+// ✅ Middleware (same behavior as before)
+export const uploadFile = (req, res, next) => {
+  upload.single("file")(req, res, (err) => {
+    if (!err) return next();
 
     if (err instanceof multer.MulterError) {
       const message =
         err.code === "LIMIT_FILE_SIZE"
-          ? "Image size must be 5MB or less"
+          ? "File size must be 15MB or less"
           : err.message;
+
       return res.status(400).json({ ok: false, error: message });
     }
 
-    if (err.message?.includes("Unexpected end of form")) {
-      return res.status(400).json({
-        ok: false,
-        error:
-          "Incomplete upload request. Send multipart/form-data with the image field and do not set the boundary manually.",
-      });
-    }
-
-    return res.status(400).json({ ok: false, error: err.message });
+    return res.status(400).json({
+      ok: false,
+      error: err.message || "Upload failed",
+    });
   });
 };

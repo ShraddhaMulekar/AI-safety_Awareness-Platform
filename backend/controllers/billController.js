@@ -15,12 +15,11 @@ export const billController = async (req, res) => {
     }
     console.log("BODY:", req.body);
 
-    const imagePath = req.file.path;
-    console.log("STEP 1: OCR START");
+    const fileUrl = req.file.path; // Cloudinary URL    console.log("STEP 1: OCR START");
 
     // OCR
     const extractedText = await extractTextFromImage(
-      imagePath,
+      fileUrl,
       req.file.mimetype,
     );
     console.log("STEP 2: OCR DONE:", extractedText);
