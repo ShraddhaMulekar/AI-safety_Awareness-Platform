@@ -99,7 +99,7 @@ const BillAnalyzerPage = () => {
           >
             <Input
               type="file"
-              accept="image/*"
+              accept="image/*,application/pdf"
               onChange={(e) => setFile(e.target.files[0])}
               p={1}
               bg="whiteAlpha.100"

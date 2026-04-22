@@ -19,7 +19,10 @@ export const billController = async (req, res) => {
     console.log("STEP 1: OCR START");
 
     // OCR
-    const extractedText = await extractTextFromImage(imagePath);
+    const extractedText = await extractTextFromImage(
+      imagePath,
+      req.file.mimetype,
+    );
     console.log("STEP 2: OCR DONE:", extractedText);
 
     console.log("STEP 3: HF START");

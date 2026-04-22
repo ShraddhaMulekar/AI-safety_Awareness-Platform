@@ -1,5 +1,4 @@
 import React from "react";
-import { Box, Text, Heading } from "@chakra-ui/react";
 
 const BillComponent = ({ data }) => {
   if (!data) {
@@ -8,102 +7,90 @@ const BillComponent = ({ data }) => {
     );
   }
 
-  const bill = data.billData;
-
-  if (!bill) return null;
-
   return (
-    <Box mt={5}>
-      <Heading size="md">📊 Bill Analysis</Heading>
+    <div style={{ marginTop: "20px" }}>
+      <h2>📊 Bill Analysis</h2>
 
-      {/* 🔥 TYPE BASED UI */}
-      {bill.type === "electricity" || bill.type === "water" ? (
-      
-        <Box mt={4} p={10} border="1px solid #ccc" borderRadius="10px">
-          <Text style={{ borderLeft: bill.type === "electricity" ? "5px solid yellow" : "5px solid green" }}>
-            <strong>⚡ Type:</strong> {bill.type}
-          </Text>
-          <Text>
-            <strong>Total Amount:</strong> ₹{bill.total || "N/A"}
-          </Text>
-          <Text>
-            <strong>Units:</strong> {bill.unit || "N/A"}
-          </Text>
-          <Text>
-            <strong>Due Date:</strong> {bill.dueDate || "N/A"}
-          </Text>
+      <p>
+        <strong>Bill Type:</strong> {data.billData?.category}
+      </p>
 
-          <Text mt={2}>
-            <strong>Consumer Name:</strong> {bill.consumerName || "N/A"}
-          </Text>
-          <Text>
-            <strong>Address:</strong> {bill.consumerAddress || "N/A"}
-          </Text>
+      <p>
+        <strong>Total:</strong> {data.billData?.total || "N/A"}
+      </p>
 
-          <Text mt={2}>
-            <strong>Bill Number:</strong> {bill.billNumber || "N/A"}
-          </Text>
-          <Text>
-            <strong>Account Number:</strong> {bill.accountNumber || "N/A"}
-          </Text>
+      <p>
+        <strong>Due Date:</strong> {data.billData?.dueDate || "N/A"}
+      </p>
 
-          <Text mt={2}>
-            <strong>Last Payment:</strong>
-          </Text>
-          <Text>Amount: {bill.lastPayment?.amount || "N/A"}</Text>
-          <Text>Unit: {bill.lastPayment?.unit || "N/A"}</Text>
-
-          <Text mt={3}>
-            <strong>Summary:</strong>{" "}
-            {bill.summary || "No short summary available."}
-          </Text>
-        </Box>
-      ) : (
-        <Box mt={4} p={4} border="1px solid #ccc" borderRadius="10px">
-          <Text>
-            <strong>🛒 Type:</strong> Other (Shopping)
-          </Text>
-          <Text>
-            <strong>Total Amount:</strong> ₹{bill.total || "N/A"}
-          </Text>
-          <Text>
-            <strong>Consumer Name:</strong> {bill.consumerName || "N/A"}
-          </Text>
-
-          <Text mt={2}>
-            <strong>Total Items:</strong> {bill.itemCount || 0}
-          </Text>
-
-          <Text mt={2}>
-            <strong>Items:</strong>
-          </Text>
-          <ul>
-            {(bill.items || []).map((item, i) => {
-              const text = typeof item === "string"
-                ? item
-                : item && typeof item === "object"
-                  ? item.description || item.name || `${item.amount ?? ""}`
-                  : String(item);
-
-              const amount = item && typeof item === "object"
-                ? item.amount
-                : null;
-
-              return (
-                <li key={i}>
-                  {text}
-                  {amount != null ? ` - ₹${amount}` : null}
-                </li>
-              );
-            })}
-          </ul>
-
-          <Text mt={3}>
-            <strong>Summary:</strong> {bill.summary || "No short summary available."}
-          </Text>
-        </Box>
+      {data.billData?.unit && (
+        <p>
+          <strong>Units:</strong> {data.billData.unit}
+        </p>
       )}
-    </Box>
+
+      <p>
+        <strong>Summary:</strong>{" "}
+        {data.billData?.summary || "No short summary available."}
+      </p>
+
+      {typeof data.billData?.itemCount === "number" &&
+        data.billData.itemCount > 0 && (
+          <>
+            <p>
+              <strong>Item Count:</strong> {data.billData.itemCount}
+            </p>
+            <p>
+              <strong>Calculated Total:</strong>{" "}
+              {data.billData.calculatedTotal || "N/A"}
+            </p>
+            <p>
+              <strong>Total Check:</strong>{" "}
+              {data.billData.totalsMatch === null
+                ? "Could not verify"
+                : data.billData.totalsMatch
+                  ? "Correct"
+                  : "Mismatch found"}
+            </p>
+            {data.billData.mismatchNote && (
+              <p>
+                <strong>Check Result:</strong> {data.billData.mismatchNote}
+              </p>
+            )}
+          </>
+        )}
+
+      <h3>Easy To Understand</h3>
+      <ul>
+        {(data.billData?.bullets || []).map((point, index) => (
+          <li key={`${point}-${index}`}>{point}</li>
+        ))}
+      </ul>
+
+      {Array.isArray(data.billData?.items) &&
+        data.billData.items.length > 0 && (
+          <>
+            <h3>Detected Items</h3>
+            <ul>
+              {data.billData.items.map((item, index) => (
+                <li key={`${item.name}-${index}`}>
+                  {item.name} | Qty: {item.quantity || 0} | Total: Rs{" "}
+                  {item.total || "0.00"}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+
+      <details>
+        <summary>Show technical details</summary>
+        <p>
+          <strong>Parser:</strong> {data.billData?.parser}
+        </p>
+        <h4>🧾 Extracted Text</h4>
+        <pre>{data.extractedText}</pre>
+      </details>
+    </div>
   );
 };
 
