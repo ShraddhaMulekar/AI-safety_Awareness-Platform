@@ -2,16 +2,11 @@ import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../config/cloudinary.js";
 
-// ✅ Cloudinary storage
+// Cloudinary storage
 const storage = new CloudinaryStorage({
   cloudinary,
   params: async (req, file) => {
-    // let resourceType = "auto"; // handles image + pdf
     const isPDF = file.mimetype === "application/pdf";
-
-    console.log(process.env.CLOUD_NAME);
-    console.log(process.env.CLOUD_API_KEY);
-    console.log(process.env.CLOUD_API_SECRET);
 
     return {
       folder: "bills",
@@ -23,7 +18,7 @@ const storage = new CloudinaryStorage({
   },
 });
 
-// ✅ File filter (same logic, simplified)
+// File filter
 const fileFilter = (_req, file, cb) => {
   const isValid =
     file.mimetype.startsWith("image/") || file.mimetype === "application/pdf";
@@ -35,14 +30,14 @@ const fileFilter = (_req, file, cb) => {
   cb(null, true);
 };
 
-// ✅ Multer config
+// Multer config
 export const upload = multer({
   storage,
   fileFilter,
   limits: { fileSize: 15 * 1024 * 1024 },
 });
 
-// ✅ Middleware (same behavior as before)
+// Middleware
 export const uploadFile = (req, res, next) => {
   upload.single("file")(req, res, (err) => {
     if (!err) return next();
@@ -53,12 +48,12 @@ export const uploadFile = (req, res, next) => {
           ? "File size must be 15MB or less"
           : err.message;
 
-      return res.status(400).json({ ok: false, error: message });
+      return res.status(400).json({ success: false, error: message });
     }
 
-    console.log("err", err);
+    //console.log("err", err);
     return res.status(400).json({
-      ok: false,
+      success: false,
       error: err.message || "File upload failed",
     });
   });

@@ -8,7 +8,7 @@ export const loginController = async (req, res) => {
   if (!email || !password) {
     return res
       .status(400)
-      .json({ message: "Please fill all the fields", ok: false });
+      .json({ message: "Please fill all the fields!", success: false });
   }
 
   try {
@@ -16,7 +16,7 @@ export const loginController = async (req, res) => {
     if (!userMatch) {
       return res
         .status(400)
-        .json({ message: "User not found. Please register.", ok: false });
+        .json({ message: "User not found. Please register now!", success: false });
     }
 
     bcrypt.compare(password, userMatch.password, async (err, result) => {
@@ -24,7 +24,7 @@ export const loginController = async (req, res) => {
         return res.status(500).json({
           message: "Error comparing passwords",
           error: err.message,
-          ok: false,
+          success: false,
         });
       }
       if (result) {
@@ -39,19 +39,19 @@ export const loginController = async (req, res) => {
         return res.status(200).json({
           message: "Login successful!",
           token,
-          ok: true,
+          success: true,
         });
       } else {
         return res
           .status(400)
-          .json({ message: "Invalid Password!", ok: false });
+          .json({ message: "Invalid Password!", success: false });
       }
     });
   } catch (error) {
     return res.status(500).json({
       message: "Internal server error",
       error: error.message,
-      ok: false,
+      success: false,
     });
   }
 };

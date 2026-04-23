@@ -6,7 +6,7 @@ export const authenticateUser = async (req, res, next) => {
   const token = authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
 
   if (!token) {
-    return res.status(401).json({ message: "Unauthorized", ok: false });
+    return res.status(401).json({ message: "You are not Logged in. Please login now!", success: false });
   }
 
   try {
@@ -14,12 +14,12 @@ export const authenticateUser = async (req, res, next) => {
     const user = await UserModel.findById(decoded.id);
 
     if (!user) {
-      return res.status(401).json({ message: "Unauthorized", ok: false });
+      return res.status(401).json({ message: "User not found!", success: false });
     }
 
     req.user = user;
     next();
   } catch (error) {
-    return res.status(401).json({ message: "Invalid or expired token", ok: false });
+    return res.status(401).json({ message: "Invalid or expired token!", success: false });
   }
 };

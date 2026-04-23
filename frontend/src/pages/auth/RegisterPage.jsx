@@ -86,7 +86,14 @@ export const RegisterPage = () => {
               borderColor="whiteAlpha.300"
             />
           </FormControl>
-          <Button type="submit" colorScheme="purple" size="lg" borderRadius="base" _hover={{borderRadius:"full"}}>
+          <Button
+            type="submit"
+            colorScheme="purple"
+            size="lg"
+            borderRadius="base"
+            _hover={{ borderRadius: "full" }}
+            loadingText="Signing in..."
+          >
             Register
           </Button>
           <Text textAlign="center" color="whiteAlpha.800">

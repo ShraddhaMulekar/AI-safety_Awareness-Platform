@@ -118,24 +118,6 @@ const HistoryPage = () => {
                 <strong>Saved on:</strong>{" "}
                 {new Date(bill.createdAt).toLocaleString()}
               </Text>
-
-              {/* {bill.extractedText && (
-                <Box
-                  mt={3}
-                  p={4}
-                  bg="whiteAlpha.900"
-                  borderRadius="xl"
-                  border="1px solid"
-                  borderColor="gray.200"
-                >
-                  <Text fontWeight="600" mb={2} color="gray.700">
-                    Extracted text
-                  </Text>
-                  <Text color="gray.700" fontSize="sm" whiteSpace="pre-wrap">
-                    {bill.extractedText}
-                  </Text>
-                </Box>
-              )} */}
             </Box>
           ))}
         </Stack>

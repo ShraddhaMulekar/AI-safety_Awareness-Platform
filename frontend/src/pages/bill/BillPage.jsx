@@ -28,7 +28,7 @@ const BillAnalyzerPage = () => {
     try {
       const res = await BillService(request, file);
       setResult(res);
-      if (!res?.ok) {
+      if (!res?.success) {
         alert(res?.error || "Analysis failed");
       }
     } catch (err) {
@@ -46,7 +46,7 @@ const BillAnalyzerPage = () => {
       return;
     }
 
-    if (!result || !result.ok) {
+    if (!result || !result.success) {
       alert("Please analyze a bill before saving.");
       return;
     }
@@ -68,7 +68,7 @@ const BillAnalyzerPage = () => {
         return;
       }
 
-      if (res?.ok) {
+      if (res?.success) {
         setSaved(true);
         alert("Bill saved to history successfully!");
       } else {
@@ -122,19 +122,21 @@ const BillAnalyzerPage = () => {
             >
               Upload & Analyze
             </Button>
-
           </Stack>
         </Box>
-            <Button
-              colorScheme="purple"
-              type="button"
-              onClick={handleSave}
-              isLoading={saving}
-              loadingText="Saving..."
-              size="lg"
-            >
-              Save for later
-            </Button>
+        
+        <br />
+
+        <Button
+          colorScheme="purple"
+          type="button"
+          onClick={handleSave}
+          isLoading={saving}
+          loadingText="Saving..."
+          size="lg"
+        >
+          Save for later
+        </Button>
       </Box>
 
       {error && (

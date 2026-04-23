@@ -7,7 +7,7 @@ export const registerController = async (req, res) => {
   if (!name || !email || !password) {
     return res
       .status(400)
-      .json({ message: "Please fill all the fields", ok: false });
+      .json({ message: "Please fill all the fields", success: false });
   }
 
   try {
@@ -16,7 +16,7 @@ export const registerController = async (req, res) => {
     if (userMatch) {
       return res
         .status(400)
-        .json({ message: "User already exists. Please login.", ok: false });
+        .json({ message: "User already exists. Please login now!", success: false });
     }
 
     bcrypt.hash(
@@ -29,28 +29,28 @@ export const registerController = async (req, res) => {
             .json({
               message: "Error hashing password",
               error: err.message,
-              ok: false,
+              success: false,
             });
         }
         const newUser = new UserModel({ name, email, password: hash });
         await newUser.save();
 
-        res
+        return res
           .status(201)
           .json({
             message: "User registered successfully!",
             newUser: { name, email },
-            ok: true,
+            success: true,
           });
       },
     );
   } catch (error) {
-    res
+    return res
       .status(500)
       .json({
         message: "Internal server error",
         error: error.message,
-        ok: false,
+        success: false,
       });
   }
 };

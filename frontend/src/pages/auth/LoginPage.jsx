@@ -49,7 +49,9 @@ export const LoginPage = () => {
         <Stack spacing={6}>
           <Stack spacing={1} textAlign="center">
             <Heading size="lg">Welcome Back</Heading>
-            <Text color="whiteAlpha.800">Sign in to continue your safety analysis.</Text>
+            <Text color="whiteAlpha.800">
+              Sign in to continue your safety analysis.
+            </Text>
           </Stack>
           <FormControl isRequired>
             <FormLabel>Email</FormLabel>
@@ -75,7 +77,15 @@ export const LoginPage = () => {
               borderColor="whiteAlpha.300"
             />
           </FormControl>
-          <Button type="submit" colorScheme="cyan" size="lg" borderRadius="base" _hover={{borderRadius:"full"}} isLoading={loading} loadingText="Signing in...">
+          <Button
+            type="submit"
+            colorScheme="cyan"
+            size="lg"
+            borderRadius="base"
+            _hover={{ borderRadius: "full" }}
+            isLoading={loading}
+            loadingText="Logging in..."
+          >
             Login
           </Button>
           <Text textAlign="center" color="whiteAlpha.800">

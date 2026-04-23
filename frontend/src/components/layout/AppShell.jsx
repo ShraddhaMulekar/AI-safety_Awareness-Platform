@@ -15,8 +15,6 @@ import { useState, useEffect } from "react";
 
 const links = [
   { label: "Home", to: "/" },
-  // { label: "Login", to: "/login" },
-  // { label: "Register", to: "/register" },
   { label: "Scam Analyzer", to: "/scam" },
   { label: "Bill Analyzer", to: "/bill" },
   { label: "History", to: "/history" },
@@ -32,6 +30,7 @@ const AppShell = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const compact = useBreakpointValue({ base: true, md: false });
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -46,7 +45,10 @@ const AppShell = ({ children }) => {
   };
 
   return (
-    <Box minH="100vh" bgGradient="radial(circle at top, #1a2d65 0%, #070b1a 40%, #04070f 100%)">
+    <Box
+      minH="100vh"
+      bgGradient="radial(circle at top, #1a2d65 0%, #070b1a 40%, #04070f 100%)"
+    >
       <Box
         position="fixed"
         top="120px"
@@ -92,7 +94,11 @@ const AppShell = ({ children }) => {
                 AI Safety Awareness
               </Text>
             </HStack>
-            <HStack spacing={2} flexWrap="wrap" justify={compact ? "center" : "end"}>
+            <HStack
+              spacing={2}
+              flexWrap="wrap"
+              justify={compact ? "center" : "end"}
+            >
               {links.map((link) => {
                 const isActive = location.pathname === link.to;
                 return (

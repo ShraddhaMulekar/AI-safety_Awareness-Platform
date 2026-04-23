@@ -6,7 +6,7 @@ import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 export const extractTextFromImage = async (fileUrl, mimetype) => {
   try {
 
-    // ✅ PDF — use pdfjs-dist (works for electricity bill)
+    // PDF — use pdfjs-dist (works for electricity bill)
     if (mimetype === "application/pdf") {
       const response = await axios.get(fileUrl, {
         responseType: "arraybuffer",
@@ -32,7 +32,7 @@ export const extractTextFromImage = async (fileUrl, mimetype) => {
       return fullText;
     }
 
-    // ✅ IMAGE — download + preprocess + Tesseract (works for water bill photo)
+    // IMAGE — download + preprocess + Tesseract (works for water bill photo)
     const response = await axios.get(fileUrl, {
       responseType: "arraybuffer",
     });
@@ -48,9 +48,9 @@ export const extractTextFromImage = async (fileUrl, mimetype) => {
       tessedit_pageseg_mode: "1",
     });
 
-    console.log("=== RAW OCR OUTPUT ===");
-    console.log(result.data.text);
-    console.log("=== END OCR ===");
+    // console.log("=== RAW OCR OUTPUT ===");
+    // console.log(result.data.text);
+    // console.log("=== END OCR ===");
 
     return result.data.text;
 

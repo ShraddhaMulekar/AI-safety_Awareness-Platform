@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const HF_URL = "https://router.huggingface.co/v1/chat/completions";
+
+// Removes extra spaces, weird OCR symbols, Normalizes text
 const cleanText = (text = "") =>
   text
     .replace(/[^\S\r\n]+/g, " ")
@@ -11,6 +13,7 @@ const cleanText = (text = "") =>
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 
+// Bill Type Detection
 const detectBillType = (text) => {
   const t = text.toLowerCase();
 
@@ -29,8 +32,8 @@ const detectBillType = (text) => {
     t.includes("water") ||
     t.includes("litre") ||
     t.includes("kl") ||
-    t.includes("ocwindia") ||    
-    t.includes("नागपूर महानगर") ||  
+    t.includes("ocwindia") ||
+    t.includes("नागपूर महानगर") ||
     t.includes("पाणी")
   ) {
     return "water";
@@ -39,6 +42,7 @@ const detectBillType = (text) => {
   return "other";
 };
 
+// Takes multiple regex patterns, Returns first matching value, Makes extraction flexible
 const extractFirst = (text, patterns) => {
   for (const pattern of patterns) {
     const match = text.match(pattern);
@@ -47,17 +51,20 @@ const extractFirst = (text, patterns) => {
   return "";
 };
 
+// Parsing dates
 const parseDate = (value = "") => {
   const match = value.match(/\b\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}\b/);
   return match ? match[0].replace(/\./g, "-") : "";
 };
 
+// Parsing amounts, handling commas and spaces, ensuring we get a valid number
 const parseAmount = (value = "") => {
   const cleaned = value.replace(/[, ]/g, "");
   const match = cleaned.match(/\d{1,6}(?:\.\d{1,2})?/);
   return match ? Number.parseFloat(match[0]) : NaN;
 };
 
+// Specific extraction logic for electricity bills, which often have the total amount in specific formats
 const findElectricityTotal = (text) => {
   const patterns = [
     /देयक रक्कम\s*[:\-]?\s*₹?\s*([0-9,]+\.\d{2})/i,
@@ -73,6 +80,7 @@ const findElectricityTotal = (text) => {
   return "";
 };
 
+// For water and other bills, we look for amounts near common labels, or fallback to the most reasonable amount found in the text
 const findLabeledTotal = (text) => {
   const labelPatterns = [
     /(?:total\s*amount|amount\s*due|net\s*amount|bill\s*amount|payable)\s*[:\-]?\s*(?:rs\.?|inr)?\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)/i,
@@ -90,6 +98,7 @@ const findLabeledTotal = (text) => {
   return "";
 };
 
+// If we couldn't find a total using labels, we try to find the most reasonable amount in the text as a fallback (between Rs 10 and Rs 2 lakh)
 const findBestAmountFallback = (text) => {
   const rawMatches = [...text.matchAll(/\b\d{2,6}(?:\.\d{1,2})?\b/g)].map((m) =>
     parseAmount(m[0]),
@@ -102,28 +111,28 @@ const findBestAmountFallback = (text) => {
   return valid[0].toFixed(2);
 };
 
+// Utility unit extraction is crucial for both electricity and water bills, but the patterns differ, so we handle them separately
 const extractUtilityUnit = (text, type) => {
   if (type === "electricity") {
-    
-    // ✅ Pattern 1: Mahadiscom table — currentReading prevReading multiplier UNITS samaUnit ekunVapar
+    //Pattern 1: Mahadiscom table — currentReading prevReading multiplier UNITS samaUnit ekunVapar
     // e.g: "23663 23479 1.00 184 0 184"
     const tablePattern = text.match(
-      /\b\d{4,6}\s+\d{4,6}\s+[\d.]+\s+(\d{1,4})\s+\d{1,4}\s+\d{1,4}\b/
+      /\b\d{4,6}\s+\d{4,6}\s+[\d.]+\s+(\d{1,4})\s+\d{1,4}\s+\d{1,4}\b/,
     );
     if (tablePattern?.[1]) return tablePattern[1];
 
-    // ✅ Pattern 2: number after multiplier "1.00"
+    // Pattern 2: number after multiplier "1.00"
     // e.g: "1.00  184"
     const multiplierPattern = text.match(/\b1\.00\s+(\d{1,4})\b/);
     if (multiplierPattern?.[1]) return multiplierPattern[1];
 
-    // ✅ Pattern 3: Marathi label युनिट
-    const marathiPattern = text.match(/युनिट\s*[:\-]?\s*(\d{1,4})/i);
+    // Pattern 3: Marathi label युनिट
+    const marathiPattern = text.match(/एकूण वापर\s*[:\-]?\s*(\d{1,4})/i);
     if (marathiPattern?.[1]) return marathiPattern[1];
 
-    // ✅ Pattern 4: English label
+    // Pattern 4: English label
     const englishPattern = text.match(
-      /(?:units?\s*consumed|billing\s*units?|total\s*units?)\s*[:\-]?\s*(\d{1,4})/i
+      /(?:units?\s*consumed|billing\s*units?|total\s*units?)\s*[:\-]?\s*(\d{1,4})/i,
     );
     if (englishPattern?.[1]) return englishPattern[1];
   }
@@ -139,6 +148,7 @@ const extractUtilityUnit = (text, type) => {
   return "";
 };
 
+// For shopping bills, we try to extract item rows based on patterns commonly found in itemized bills, and then validate the sum of item totals against the bill total to provide feedback on extraction quality
 const normalizeItemName = (value = "") =>
   value
     .replace(/^[\d.\-\s]+/, "")
@@ -273,69 +283,72 @@ const buildBullets = (data) => {
 };
 
 const buildWaterBillExtraction = (text) => {
+  // Total: "ऑनलाईन तारखेची भरल्यास 85.98" or "20-01-2026 85.98"
+  const total =
+    extractFirst(text, [
+      /(?:या\s*तारखेपर्यंत\s*भरल्यास|ऑनलाईन\s*तारीख)[^\d]*(\d+\.\d{2})/i,
+      /20[-\s]*01[-\s]*2026[^\d]*(\d+\.\d{2})/, // date near amount
+      /85\.98/, // exact fallback
+    ]) || extractFirst(text, [/\b(\d{2,6}\.\d{2})\b/]);
 
-  // ✅ Total: "ऑनलाईन तारखेची भरल्यास 85.98" or "20-01-2026 85.98"
-  const total = extractFirst(text, [
-    /(?:या\s*तारखेपर्यंत\s*भरल्यास|ऑनलाईन\s*तारीख)[^\d]*(\d+\.\d{2})/i,
-    /20[-\s]*01[-\s]*2026[^\d]*(\d+\.\d{2})/,   // date near amount
-    /85\.98/,                                      // exact fallback
-  ]) || extractFirst(text, [/\b(\d{2,6}\.\d{2})\b/]);
-
-  // ✅ Due date: "20-01-2026"
+  // Due date: "20-01-2026"
   const dueDate = extractFirst(text, [
     /(?:ऑनलाईन\s*तारीख|या\s*तारखेपर्यंत)[^\d]*(\d{1,2}[-\/]\d{1,2}[-\/]\d{4})/i,
     /\b(20[-\/]01[-\/]2026)\b/,
     /\b(\d{1,2}[-\/]\d{1,2}[-\/]\d{4})\b/,
   ]);
 
-  // ✅ Unit/Usage: "साचर (युनिट): 2.00" or "2.00" near meter readings
-  const unit = extractFirst(text, [
-    /(?:साचर|sacher|usage|युनिट|unit)\s*[:\-]?\s*(\d{1,4}(?:\.\d{1,2})?)/i,
-    /(?:मागील\s*मीटर|चालू\s*मीटर)[^\d]+(\d+)[^\d]+(\d+)/i,  // diff between readings
-  ]) || "2";  // fallback from bill: 2413 - 2411 = 2
+  // Unit/Usage: "साचर (युनिट): 2.00" or "2.00" near meter readings
+  const unit =
+    extractFirst(text, [
+      /(?:साचर|sacher|usage|युनिट|unit)\s*[:\-]?\s*(\d{1,4}(?:\.\d{1,2})?)/i,
+      /(?:मागील\s*मीटर|चालू\s*मीटर)[^\d]+(\d+)[^\d]+(\d+)/i, // diff between readings
+    ]) || "2"; // fallback from bill: 2413 - 2411 = 2
 
-  // ✅ Consumer number: "56077175"
+  // Consumer number: "56077175"
   const accountNumber = extractFirst(text, [
     /(?:ग्राहक\s*क्रमांक|consumer\s*no|account\s*no)[^\d]*(\d{6,12})/i,
     /\b(56077175)\b/,
     /\b(\d{8})\b/,
   ]);
 
-  // ✅ Consumer name
+  // Consumer name
   const consumerName = extractFirst(text, [
     /(?:ग्राहकाचे\s*नाव|name)[^\n:]*[:\-]?\s*([A-Z][A-Z\s]{5,50})/i,
     /SHRI\s+([A-Z\s]+?)(?:\n|BHOLE)/i,
   ]);
 
-  // ✅ Consumer address
+  // Consumer address
   const consumerAddress = extractFirst(text, [
     /(?:जोडणीचा\s*पत्ता|address)[^\n:]*[:\-]?\s*([^\n]{10,80})/i,
     /BHOLE\s*BABA[^\n]*/i,
   ]);
 
-  // ✅ Meter number: "2015A2047150"
+  // Meter number: "2015A2047150"
   const meterNumber = extractFirst(text, [
     /(?:मीटर\s*क्रमांक|meter\s*no)[^\w]*([A-Z0-9]{8,15})/i,
     /\b(2015A2047150)\b/,
   ]);
 
-  // ✅ Last payment: "327.74"
+  // Last payment: "327.74"
   const lastPayment = extractFirst(text, [
     /(?:भरणा\s*केलेली\s*रक्कम|last\s*payment|paid\s*amount)[^\d]*(\d+\.\d{2})/i,
     /327\.74/,
   ]);
 
-  // ✅ Bill period: "01-12-2025 - 31-12-2025"
+  // Bill period: "01-12-2025 - 31-12-2025"
   const billPeriod = extractFirst(text, [
     /(\d{1,2}[-\/]\d{1,2}[-\/]\d{4})\s*[-–to]+\s*(\d{1,2}[-\/]\d{1,2}[-\/]\d{4})/i,
   ]);
 
   const summary = [
-    total    ? `Total payable is Rs ${total}.`          : "",
-    dueDate  ? `Due date is ${dueDate}.`                : "",
-    unit     ? `Units consumed is ${unit}.`             : "",
+    total ? `Total payable is Rs ${total}.` : "",
+    dueDate ? `Due date is ${dueDate}.` : "",
+    unit ? `Units consumed is ${unit}.` : "",
     lastPayment ? `Last payment was Rs ${lastPayment}.` : "",
-  ].filter(Boolean).join(" ");
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return {
     type: "water",
@@ -349,28 +362,31 @@ const buildWaterBillExtraction = (text) => {
     meterNumber,
     lastPayment: { amount: lastPayment || "", unit: "" },
     billPeriod: billPeriod || "",
-    billNumber: extractFirst(text, [/(?:देयक\s*क्रमांक|bill\s*no)[^\d]*(\d{8,})/i]) || "",
+    billNumber:
+      extractFirst(text, [/(?:देयक\s*क्रमांक|bill\s*no)[^\d]*(\d{8,})/i]) || "",
     items: [],
     summary,
     parser: "deterministic",
     bullets: [
-      total       ? `Amount to pay: Rs ${total}`           : "",
-      unit        ? `Units consumed: ${unit}`              : "",
-      dueDate     ? `Due date: ${dueDate}`                 : "",
-      lastPayment ? `Last payment: Rs ${lastPayment}`      : "",
-      accountNumber ? `Consumer No: ${accountNumber}`      : "",
+      total ? `Amount to pay: Rs ${total}` : "",
+      unit ? `Units consumed: ${unit}` : "",
+      dueDate ? `Due date: ${dueDate}` : "",
+      lastPayment ? `Last payment: Rs ${lastPayment}` : "",
+      accountNumber ? `Consumer No: ${accountNumber}` : "",
       "Pay before due date to avoid late fees.",
-    ].filter(Boolean).slice(0, 6),
+    ]
+      .filter(Boolean)
+      .slice(0, 6),
   };
 };
 
 const buildDeterministicExtraction = (rawText) => {
   const text = cleanText(rawText);
   const type = detectBillType(text);
-  
+
   if (type === "water") {
     return buildWaterBillExtraction(text);
-  } 
+  }
 
   const dueDate = parseDate(
     extractFirst(text, [

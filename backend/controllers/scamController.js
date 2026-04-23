@@ -5,18 +5,20 @@ export const scamController = async (req, res) => {
     const { text } = req.body;
 
     if (!text) {
-      return res.status(400).json({ message: "Text is required" });
+      return res
+        .status(400)
+        .json({ message: "Text is required", success: false });
     }
 
     const result = await analyzeScam(text);
 
     return res.status(200).json({
       message: "Scam analysis result",
-      ok: true,
+      success: true,
       data: result,
     });
   } catch (error) {
-    console.log(error)
-    return res.status(500).json({ message: error.message });
+    console.log(error);
+    return res.status(500).json({ message: error.message, success: false });
   }
 };
