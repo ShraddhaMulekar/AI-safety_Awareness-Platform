@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import BillResult from "../../components/bill/BillComponent";
 import BillService from "../../services/bill/BillService";
 import SavedBillService from "../../services/bill/savedBillService";
-import { UseFetch } from "../../hooks/UseFetch";
+import { useFetch } from "../../hooks/UseFetch";
 
 const BillAnalyzerPage = () => {
   const navigate = useNavigate();
@@ -12,8 +12,8 @@ const BillAnalyzerPage = () => {
   const [result, setResult] = useState(null);
   const [saved, setSaved] = useState(false);
 
-  const { loading, error, request } = UseFetch();
-  const { loading: saving, request: saveRequest } = UseFetch();
+  const { loading, error, request } = useFetch();
+  const { loading: saving, request: saveRequest } = useFetch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

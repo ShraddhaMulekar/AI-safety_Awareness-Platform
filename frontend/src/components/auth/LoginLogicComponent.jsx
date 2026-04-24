@@ -1,8 +1,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { UseFetch } from "../../hooks/UseFetch";
+import { useFetch } from "../../hooks/UseFetch";
+
 
 export const useLoginLogic = () => {
-  const { request } = UseFetch();
+  const { request } = useFetch();
   const navigate = useNavigate();
   const location = useLocation();
 

@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { UseFetch } from "../../hooks/UseFetch";
+import { useFetch } from "../../hooks/UseFetch";
 
 export const RegisterLogicComponent = () => {
-  const { request } = UseFetch();
+  const { request } = useFetch();
 
   const registerUser = async (values) => {
     try {
