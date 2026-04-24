@@ -4,8 +4,7 @@ import { useNavigate } from "react-router-dom";
 import BillResult from "../../components/bill/BillComponent";
 import BillService from "../../services/bill/BillService";
 import SavedBillService from "../../services/bill/savedBillService";
-import { useFetch } from "../../hooks/UseFetch";
-
+import { useFetch } from "../../hooks/useFetchhook";
 const BillAnalyzerPage = () => {
   const navigate = useNavigate();
   const [file, setFile] = useState(null);

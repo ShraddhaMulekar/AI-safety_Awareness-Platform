@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 
 import { scamComponent } from "../../components/scam/ScamComponent";
-import { useFetch } from "../../hooks/UseFetch";
+import { useFetch } from "../../hooks/useFetchhook";
 
 const ScamAnalyzerPage = () => {
   const [text, setText] = useState("");

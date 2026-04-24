@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { useFetch } from "../../hooks/UseFetch";
+import { useFetch } from "../../hooks/useFetchhook";
+
 
 export const RegisterLogicComponent = () => {
   const { request } = useFetch();
