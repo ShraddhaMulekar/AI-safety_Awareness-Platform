@@ -1,7 +1,6 @@
 // export const API_URL = "http://localhost:5000" 
 export const API_URL = "https://ai-safety-awareness-platform.onrender.com"
 
-
 export const fetchAPI = async (url, Options = {}) => {
   const token = localStorage.getItem("token")
   const headers = {
