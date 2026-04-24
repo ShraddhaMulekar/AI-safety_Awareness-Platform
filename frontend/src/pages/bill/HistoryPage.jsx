@@ -17,6 +17,7 @@ const HistoryPage = () => {
   const navigate = useNavigate();
   const [bills, setBills] = useState([]);
   const { loading, error, request } = UseFetch();
+  // console.log({request,loading})
   const token = localStorage.getItem("token");
 
   useEffect(() => {
