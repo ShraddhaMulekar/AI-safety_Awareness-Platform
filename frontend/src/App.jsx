@@ -3,9 +3,9 @@ import ScamAnalyzerPage from "./pages/scam/ScamAnalyzerPage"
 import { LoginPage } from "./pages/auth/LoginPage"
 import { RegisterPage } from "./pages/auth/RegisterPage"
 import BillAnalyzerPage from "./pages/bill/BillPage"
-import HistoryPage from "./pages/bill/HistoryPage"
 import HomePage from "./pages/HomePage"
 import AppShell from "./components/layout/AppShell"
+import HistoryPage from "./pages/bill/HistoryPage"
 
 function App() {
 

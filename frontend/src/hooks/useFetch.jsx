@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { fetchAPI } from "../api/baseUrl";
 
-export const useFetch = () => {
+export const UseFetch = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 

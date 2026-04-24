@@ -8,14 +8,14 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
-import { useFetch } from "../../hooks/UseFetch";
+import { UseFetch } from "../../hooks/UseFetch";
 import { scamComponent } from "../../components/scam/ScamComponent";
 
 const ScamAnalyzerPage = () => {
   const [text, setText] = useState("");
   const [result, setResult] = useState(null);
 
-  const { request, loading, error } = useFetch();
+  const { request, loading, error } = UseFetch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

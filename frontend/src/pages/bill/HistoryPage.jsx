@@ -10,13 +10,13 @@ import {
   AlertIcon,
 } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { useFetch } from "../../hooks/UseFetch";
 import SavedBillService from "../../services/bill/savedBillService";
+import { UseFetch } from "../../hooks/UseFetch";
 
 const HistoryPage = () => {
   const navigate = useNavigate();
   const [bills, setBills] = useState([]);
-  const { loading, error, request } = useFetch();
+  const { loading, error, request } = UseFetch();
   const token = localStorage.getItem("token");
 
   useEffect(() => {

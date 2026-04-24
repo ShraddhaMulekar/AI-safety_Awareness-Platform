@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Box, Button, Heading, Input, Stack, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { useFetch } from "../../hooks/UseFetch";
 import BillResult from "../../components/bill/BillComponent";
 import BillService from "../../services/bill/BillService";
 import SavedBillService from "../../services/bill/savedBillService";
+import { UseFetch } from "../../hooks/UseFetch";
 
 const BillAnalyzerPage = () => {
   const navigate = useNavigate();
@@ -12,8 +12,8 @@ const BillAnalyzerPage = () => {
   const [result, setResult] = useState(null);
   const [saved, setSaved] = useState(false);
 
-  const { loading, error, request } = useFetch();
-  const { loading: saving, request: saveRequest } = useFetch();
+  const { loading, error, request } = UseFetch();
+  const { loading: saving, request: saveRequest } = UseFetch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
