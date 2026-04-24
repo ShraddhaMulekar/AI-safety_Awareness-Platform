@@ -9,7 +9,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
-import useForm from "../../hooks/useForm";
+import useForm from "../../hooks/useFormhook";
 import { RegisterLogicComponent } from "../../components/auth/RegisterLogicComponent";
 
 export const RegisterPage = () => {

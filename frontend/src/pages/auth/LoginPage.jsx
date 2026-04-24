@@ -10,7 +10,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-import useForm from "../../hooks/useForm";
+import useForm from "../../hooks/useFormhook";
 import { useLoginLogic } from "../../components/auth/LoginLogicComponent";
 
 export const LoginPage = () => {
