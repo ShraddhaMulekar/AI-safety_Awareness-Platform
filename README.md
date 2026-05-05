@@ -21,7 +21,7 @@ A web application that helps users identify scam messages and understand utility
 ## Getting Started
 
 ### Prerequisites
-- Node.js v18+
+- Node.js
 - MongoDB (local or Atlas)
 - Cloudinary account
 - HuggingFace API key
@@ -32,7 +32,7 @@ A web application that helps users identify scam messages and understand utility
 
 ```bash
 # Clone the repo
-git clone [https://github.com/your-username/ai-safety-awareness.git](https://github.com/ShraddhaMulekar/AI-safety_Awareness-Platform)
+git clone (https://github.com/ShraddhaMulekar/AI-safety_Awareness-Platform)
 
 # Install backend dependencies
 cd backend && npm install
